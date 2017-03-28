@@ -7,7 +7,24 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EditUserSquareView.h"
+@class EditUserPhotoView;
+
+@protocol EditUserPhotoViewDelegate <NSObject>
+
+- (void)editUserSquareView:(EditUserSquareView *)editUserSquareView didSelectNumIndex:(NSInteger)index;
+
+@end
 
 @interface EditUserPhotoView : UIView
+
+//获取当前排序
+@property (nonatomic,strong) NSArray * currentImageArray;
+
+@property (nonatomic,weak) id <EditUserPhotoViewDelegate> editUserPhotoViewDelegate;
+
+- (void)refreshImageData:(NSArray *)imageUrlArray;
+
+- (void)deleteEditUserSquareView:(EditUserSquareView *)squareView index:(NSInteger)index;
 
 @end

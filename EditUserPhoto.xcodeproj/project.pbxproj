@@ -16,6 +16,7 @@
 		6BD3B6671E876AF3008A1852 /* EditUserPhotoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BD3B6661E876AF3008A1852 /* EditUserPhotoTests.m */; };
 		6BD3B6721E876AF3008A1852 /* EditUserPhotoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BD3B6711E876AF3008A1852 /* EditUserPhotoUITests.m */; };
 		6BD3B6811E876B01008A1852 /* EditUserPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BD3B6801E876B01008A1852 /* EditUserPhotoView.m */; };
+		6BD3B6841E8A779B008A1852 /* EditUserSquareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BD3B6831E8A779B008A1852 /* EditUserSquareView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,8 @@
 		6BD3B6731E876AF3008A1852 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6BD3B67F1E876B01008A1852 /* EditUserPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditUserPhotoView.h; sourceTree = "<group>"; };
 		6BD3B6801E876B01008A1852 /* EditUserPhotoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditUserPhotoView.m; sourceTree = "<group>"; };
+		6BD3B6821E8A779B008A1852 /* EditUserSquareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditUserSquareView.h; sourceTree = "<group>"; };
+		6BD3B6831E8A779B008A1852 /* EditUserSquareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditUserSquareView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +113,8 @@
 				6BD3B6531E876AF3008A1852 /* ViewController.m */,
 				6BD3B67F1E876B01008A1852 /* EditUserPhotoView.h */,
 				6BD3B6801E876B01008A1852 /* EditUserPhotoView.m */,
+				6BD3B6821E8A779B008A1852 /* EditUserSquareView.h */,
+				6BD3B6831E8A779B008A1852 /* EditUserSquareView.m */,
 				6BD3B6551E876AF3008A1852 /* Main.storyboard */,
 				6BD3B6581E876AF3008A1852 /* Assets.xcassets */,
 				6BD3B65A1E876AF3008A1852 /* LaunchScreen.storyboard */,
@@ -284,6 +289,7 @@
 				6BD3B6811E876B01008A1852 /* EditUserPhotoView.m in Sources */,
 				6BD3B6541E876AF3008A1852 /* ViewController.m in Sources */,
 				6BD3B6511E876AF3008A1852 /* AppDelegate.m in Sources */,
+				6BD3B6841E8A779B008A1852 /* EditUserSquareView.m in Sources */,
 				6BD3B64E1E876AF3008A1852 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -433,6 +439,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = D882YEGCUP;
 				INFOPLIST_FILE = EditUserPhoto/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yu.EditUserPhoto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -445,6 +452,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = D882YEGCUP;
 				INFOPLIST_FILE = EditUserPhoto/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yu.EditUserPhoto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
