@@ -25,6 +25,32 @@
 
 - (void)refreshImageData:(NSArray *)imageUrlArray;
 
+//删除
 - (void)deleteEditUserSquareView:(EditUserSquareView *)squareView index:(NSInteger)index;
+
+//增加
+- (void)addEditUserSquareView:(EditUserSquareView *)squareView imageNetPatch:(NSString *)imageNetPatch;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @end

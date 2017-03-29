@@ -17,7 +17,7 @@
 
 @property (nonatomic,strong) UIButton * exportDataButton;
 
-@property (nonatomic,strong) UIButton * refreshDataButton;
+@property (nonatomic,strong) UIButton * uploadDataButton;
 
 @property (nonatomic,strong) EditUserSquareView * deleteEditUserSquareView;
 @property (nonatomic,assign) NSInteger deleteIndex;
@@ -34,7 +34,7 @@
     [self.view addSubview:self.editUserPhotoView];
     [self.view addSubview:self.remakesButton];
     [self.view addSubview:self.exportDataButton];
-    [self.view addSubview:self.refreshDataButton];
+    [self.view addSubview:self.uploadDataButton];
 }
 
 - (void)remakesButAction {
@@ -47,7 +47,7 @@
     NSLog(@"导出 === %@",self.editUserPhotoView.currentImageArray);
 }
 
-- (void)refreshDataButtonAction {
+- (void)uploadDataButtonAction {
     NSMutableArray * arrayImage = [[NSMutableArray alloc] init];
     [arrayImage addObject:@"http://7vzoqx.com1.z0.glb.clouddn.com/00014da1677b8ea062056c4949ccc911.jpeg"];
     [arrayImage addObject:@"http://7vzoqx.com1.z0.glb.clouddn.com/00019e87ce44f48fd443e6b1b399b49f.jpeg"];
@@ -63,18 +63,38 @@
 #pragma mark - EditUserPhotoViewDelegate
 
 - (void)editUserSquareView:(EditUserSquareView *)editUserSquareView didSelectNumIndex:(NSInteger)index {
+    
     _deleteEditUserSquareView = editUserSquareView;
     _deleteIndex = index;
     
-    UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"是否删除" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil];
-    alert.tag = 3001;
-    [alert show];
+    if (editUserSquareView.currentType == EditUserSquareViewTypeNone) {
+        //需要添加图片
+        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"是否上传图片" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil];
+        alert.tag = 3002;
+        [alert show];
+    }
+    else if (editUserSquareView.currentType == EditUserSquareViewTypeImageLoadSuccessful) {
+        //需要删除图片
+        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"是否删除" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil];
+        alert.tag = 3001;
+        [alert show];
+    }
+    else if (editUserSquareView.currentType == EditUserSquareViewTypeImageLoadFailure) {
+        //需要重新发送图片
+    }
+
+    
+
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     NSString * title = [alertView buttonTitleAtIndex:buttonIndex];
     if (alertView.tag == 3001 && [title isEqualToString:@"确定"]) {
         [self.editUserPhotoView deleteEditUserSquareView:_deleteEditUserSquareView index:_deleteIndex];
+    }
+    else if (alertView.tag == 3002 && [title isEqualToString:@"确定"]) {
+        NSString * addImageUrl = @"http://7vzoqx.com1.z0.glb.clouddn.com/0044755a3c76171d48d188ebba77a8e3.jpeg";
+        [self.editUserPhotoView addEditUserSquareView:_deleteEditUserSquareView imageNetPatch:addImageUrl];
     }
 }
 
@@ -112,15 +132,15 @@
     return _exportDataButton;
 }
 
-- (UIButton *)refreshDataButton {
-    if (_refreshDataButton == nil) {
-        _refreshDataButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_refreshDataButton setTitle:@"刷新" forState:UIControlStateNormal];
-        [_refreshDataButton addTarget:self action:@selector(refreshDataButtonAction) forControlEvents:UIControlEventTouchUpInside];
-        _refreshDataButton.frame = CGRectMake(10, self.exportDataButton.frame.size.height + self.exportDataButton.frame.origin.y  + 10, self.view.frame.size.width - 20, 44);
-        _refreshDataButton.backgroundColor = [UIColor grayColor];
+- (UIButton *)uploadDataButton {
+    if (_uploadDataButton == nil) {
+        _uploadDataButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_uploadDataButton setTitle:@"上传" forState:UIControlStateNormal];
+        [_uploadDataButton addTarget:self action:@selector(uploadDataButtonAction) forControlEvents:UIControlEventTouchUpInside];
+        _uploadDataButton.frame = CGRectMake(10, self.exportDataButton.frame.size.height + self.exportDataButton.frame.origin.y  + 10, self.view.frame.size.width - 20, 44);
+        _uploadDataButton.backgroundColor = [UIColor grayColor];
     }
-    return _refreshDataButton;
+    return _uploadDataButton;
 }
 
 
