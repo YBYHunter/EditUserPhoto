@@ -58,7 +58,10 @@ static CGFloat const LongPressNarrowWidth = 64;
 //刷新数据
 - (void)refreshImageData:(NSArray *)imageUrlArray {
     self.imagesUrlArray = [imageUrlArray mutableCopy];
-    for (int i = 0; i < _changeOrderimagesArray.count; i++) {
+    
+    NSInteger num = MIN(self.imagesUrlArray.count, _changeOrderimagesArray.count);
+    
+    for (int i = 0; i < num; i++) {
         EditUserSquareView * editUserSquareView = _changeOrderimagesArray[i];
         [editUserSquareView changeType:EditUserSquareViewTypeImageLoading otherData:self.imagesUrlArray[i]];
     }
@@ -83,14 +86,6 @@ static CGFloat const LongPressNarrowWidth = 64;
     
     //更新数据
     [self.imagesUrlArray removeObjectAtIndex:index];
-    if (self.imagesUrlArray.count <= 1) {
-        EditUserSquareView * editUserSquareView = _changeOrderimagesArray[0];
-        //更改状态为 唯一
-        if (editUserSquareView.currentType == EditUserSquareViewTypeImageLoadSuccessful) {
-            [editUserSquareView changeType:EditUserSquareViewTypeOnly otherData:nil];
-        }
-    }
-    
 }
 
 //增加
@@ -113,6 +108,18 @@ static CGFloat const LongPressNarrowWidth = 64;
     
     //更新数据
     [self.imagesUrlArray addObject:imageNetPatch];
+}
+
+//替换
+- (void)replaceEditUserSquareView:(EditUserSquareView *)squareView imageNetPatch:(NSString *)imageNetPatch {
+    
+    [squareView changeType:EditUserSquareViewTypeNone otherData:imageNetPatch];
+    [squareView changeType:EditUserSquareViewTypeImageLoading otherData:imageNetPatch];
+    
+    //获取第几个View需要替换
+    NSInteger toIndex = [_changeOrderimagesArray indexOfObjectIdenticalTo:squareView];
+    //更新数据
+    [self.imagesUrlArray replaceObjectAtIndex:toIndex withObject:imageNetPatch];
     
 }
 
@@ -122,6 +129,10 @@ static CGFloat const LongPressNarrowWidth = 64;
     
     EditUserSquareView * tapEditUserSquareView = (EditUserSquareView *)tap.view;
 
+    if (_imagesUrlArray.count <= 1 && tapEditUserSquareView.currentType == EditUserSquareViewTypeImageLoadSuccessful) {
+        [tapEditUserSquareView changeType:EditUserSquareViewTypeOnly otherData:nil];
+    }
+    
     NSInteger toIndex = [_changeOrderimagesArray indexOfObjectIdenticalTo:tap.view];
     if ([self.editUserPhotoViewDelegate respondsToSelector:@selector(editUserSquareView:didSelectNumIndex:)]) {
         [self.editUserPhotoViewDelegate editUserSquareView:tapEditUserSquareView didSelectNumIndex:toIndex];

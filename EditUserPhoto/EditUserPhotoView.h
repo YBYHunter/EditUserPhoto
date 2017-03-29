@@ -31,6 +31,9 @@
 //增加
 - (void)addEditUserSquareView:(EditUserSquareView *)squareView imageNetPatch:(NSString *)imageNetPatch;
 
+//替换
+- (void)replaceEditUserSquareView:(EditUserSquareView *)squareView imageNetPatch:(NSString *)imageNetPatch;
+
 
 
 

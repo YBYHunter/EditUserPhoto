@@ -54,9 +54,7 @@
     [arrayImage addObject:@"http://7vzoqx.com1.z0.glb.clouddn.com/0001fff6da7febafcd433fcc6c05853c.jpeg"];
     [arrayImage addObject:@"http://7vzoqx.com1.z0.glb.clouddn.com/0002517de13e064276a37dc17eb4e47b.jpeg"];
     [arrayImage addObject:@"http://7vzoqx.com1.z0.glb.clouddn.com/0003493831fdd92ee5a6dd05672e9702.jpeg"];
-    [arrayImage addObject:@"http://7vzoqx.com1.z0.glb.clouddn.com/00040ccc8e5f3e785c3208541b15d5d8.jpeg"];
 
-    NSLog(@"刷新");
     [self.editUserPhotoView refreshImageData:[arrayImage copy]];
 }
 
@@ -82,6 +80,12 @@
     else if (editUserSquareView.currentType == EditUserSquareViewTypeImageLoadFailure) {
         //需要重新发送图片
     }
+    else if (editUserSquareView.currentType == EditUserSquareViewTypeOnly) {
+        //需要替换图片
+        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"是否替换图片" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil];
+        alert.tag = 3003;
+        [alert show];
+    }
 
     
 
@@ -95,6 +99,10 @@
     else if (alertView.tag == 3002 && [title isEqualToString:@"确定"]) {
         NSString * addImageUrl = @"http://7vzoqx.com1.z0.glb.clouddn.com/0044755a3c76171d48d188ebba77a8e3.jpeg";
         [self.editUserPhotoView addEditUserSquareView:_deleteEditUserSquareView imageNetPatch:addImageUrl];
+    }
+    else if (alertView.tag == 3003 && [title isEqualToString:@"确定"]) {
+        NSString * addImageUrl = @"http://7vzoqx.com1.z0.glb.clouddn.com/00cbe871d250bbede73482d2a9049e6d.jpeg";
+        [self.editUserPhotoView replaceEditUserSquareView:_deleteEditUserSquareView imageNetPatch:addImageUrl];
     }
 }
 
