@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6BA46B7B1E8D104C001C5E87 /* EditUserSquareModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BA46B7A1E8D104C001C5E87 /* EditUserSquareModel.m */; };
+		6BA46B7F1E8D10F3001C5E87 /* JMActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BA46B7E1E8D10F3001C5E87 /* JMActionSheet.m */; };
+		6BA46B811E8D1158001C5E87 /* che.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6BA46B801E8D1158001C5E87 /* che.jpg */; };
+		6BA46B851E8D136E001C5E87 /* UIView+addition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BA46B841E8D136E001C5E87 /* UIView+addition.m */; };
 		6BD3B64E1E876AF3008A1852 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BD3B64D1E876AF3008A1852 /* main.m */; };
 		6BD3B6511E876AF3008A1852 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BD3B6501E876AF3008A1852 /* AppDelegate.m */; };
 		6BD3B6541E876AF3008A1852 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BD3B6531E876AF3008A1852 /* ViewController.m */; };
@@ -37,6 +41,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6BA46B791E8D104C001C5E87 /* EditUserSquareModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditUserSquareModel.h; sourceTree = "<group>"; };
+		6BA46B7A1E8D104C001C5E87 /* EditUserSquareModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditUserSquareModel.m; sourceTree = "<group>"; };
+		6BA46B7D1E8D10F3001C5E87 /* JMActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JMActionSheet.h; sourceTree = "<group>"; };
+		6BA46B7E1E8D10F3001C5E87 /* JMActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JMActionSheet.m; sourceTree = "<group>"; };
+		6BA46B801E8D1158001C5E87 /* che.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = che.jpg; sourceTree = "<group>"; };
+		6BA46B831E8D136E001C5E87 /* UIView+addition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+addition.h"; sourceTree = "<group>"; };
+		6BA46B841E8D136E001C5E87 /* UIView+addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+addition.m"; sourceTree = "<group>"; };
 		6BD3B6491E876AF3008A1852 /* EditUserPhoto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EditUserPhoto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BD3B64D1E876AF3008A1852 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6BD3B64F1E876AF3008A1852 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -84,6 +95,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6BA46B7C1E8D10F3001C5E87 /* JMActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				6BA46B7D1E8D10F3001C5E87 /* JMActionSheet.h */,
+				6BA46B7E1E8D10F3001C5E87 /* JMActionSheet.m */,
+			);
+			path = JMActionSheet;
+			sourceTree = "<group>";
+		};
+		6BA46B821E8D136E001C5E87 /* UIView+addition */ = {
+			isa = PBXGroup;
+			children = (
+				6BA46B831E8D136E001C5E87 /* UIView+addition.h */,
+				6BA46B841E8D136E001C5E87 /* UIView+addition.m */,
+			);
+			path = "UIView+addition";
+			sourceTree = "<group>";
+		};
 		6BD3B6401E876AF3008A1852 = {
 			isa = PBXGroup;
 			children = (
@@ -111,10 +140,15 @@
 				6BD3B6501E876AF3008A1852 /* AppDelegate.m */,
 				6BD3B6521E876AF3008A1852 /* ViewController.h */,
 				6BD3B6531E876AF3008A1852 /* ViewController.m */,
+				6BA46B801E8D1158001C5E87 /* che.jpg */,
+				6BA46B821E8D136E001C5E87 /* UIView+addition */,
+				6BA46B7C1E8D10F3001C5E87 /* JMActionSheet */,
 				6BD3B67F1E876B01008A1852 /* EditUserPhotoView.h */,
 				6BD3B6801E876B01008A1852 /* EditUserPhotoView.m */,
 				6BD3B6821E8A779B008A1852 /* EditUserSquareView.h */,
 				6BD3B6831E8A779B008A1852 /* EditUserSquareView.m */,
+				6BA46B791E8D104C001C5E87 /* EditUserSquareModel.h */,
+				6BA46B7A1E8D104C001C5E87 /* EditUserSquareModel.m */,
 				6BD3B6551E876AF3008A1852 /* Main.storyboard */,
 				6BD3B6581E876AF3008A1852 /* Assets.xcassets */,
 				6BD3B65A1E876AF3008A1852 /* LaunchScreen.storyboard */,
@@ -261,6 +295,7 @@
 			files = (
 				6BD3B65C1E876AF3008A1852 /* LaunchScreen.storyboard in Resources */,
 				6BD3B6591E876AF3008A1852 /* Assets.xcassets in Resources */,
+				6BA46B811E8D1158001C5E87 /* che.jpg in Resources */,
 				6BD3B6571E876AF3008A1852 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -289,7 +324,10 @@
 				6BD3B6811E876B01008A1852 /* EditUserPhotoView.m in Sources */,
 				6BD3B6541E876AF3008A1852 /* ViewController.m in Sources */,
 				6BD3B6511E876AF3008A1852 /* AppDelegate.m in Sources */,
+				6BA46B7B1E8D104C001C5E87 /* EditUserSquareModel.m in Sources */,
+				6BA46B851E8D136E001C5E87 /* UIView+addition.m in Sources */,
 				6BD3B6841E8A779B008A1852 /* EditUserSquareView.m in Sources */,
+				6BA46B7F1E8D10F3001C5E87 /* JMActionSheet.m in Sources */,
 				6BD3B64E1E876AF3008A1852 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -528,6 +566,7 @@
 				6BD3B6781E876AF4008A1852 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6BD3B6791E876AF4008A1852 /* Build configuration list for PBXNativeTarget "EditUserPhotoTests" */ = {
 			isa = XCConfigurationList;
@@ -536,6 +575,7 @@
 				6BD3B67B1E876AF4008A1852 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6BD3B67C1E876AF4008A1852 /* Build configuration list for PBXNativeTarget "EditUserPhotoUITests" */ = {
 			isa = XCConfigurationList;
@@ -544,6 +584,7 @@
 				6BD3B67E1E876AF4008A1852 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

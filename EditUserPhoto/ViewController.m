@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "EditUserPhotoView.h"
+#import "JMActionSheet.h"
 
 @interface ViewController () <EditUserPhotoViewDelegate>
 
@@ -19,8 +20,7 @@
 
 @property (nonatomic,strong) UIButton * uploadDataButton;
 
-@property (nonatomic,strong) EditUserSquareView * deleteEditUserSquareView;
-@property (nonatomic,assign) NSInteger deleteIndex;
+@property (nonatomic,strong) EditUserSquareView * selectEditUserSquareView;
 
 
 @end
@@ -44,7 +44,7 @@
 }
 
 - (void)exportDataButtonAction {
-    NSLog(@"导出 === %@",self.editUserPhotoView.currentImageArray);
+    
 }
 
 - (void)uploadDataButtonAction {
@@ -55,55 +55,94 @@
     [arrayImage addObject:@"http://7vzoqx.com1.z0.glb.clouddn.com/0002517de13e064276a37dc17eb4e47b.jpeg"];
     [arrayImage addObject:@"http://7vzoqx.com1.z0.glb.clouddn.com/0003493831fdd92ee5a6dd05672e9702.jpeg"];
 
-    [self.editUserPhotoView refreshImageData:[arrayImage copy]];
+    [self.editUserPhotoView refreshImageData:[arrayImage copy] sortID:[arrayImage copy]];
 }
 
 #pragma mark - EditUserPhotoViewDelegate
 
 - (void)editUserSquareView:(EditUserSquareView *)editUserSquareView didSelectNumIndex:(NSInteger)index {
     
-    _deleteEditUserSquareView = editUserSquareView;
-    _deleteIndex = index;
+    _selectEditUserSquareView = editUserSquareView;
     
-    if (editUserSquareView.currentType == EditUserSquareViewTypeNone) {
-        //需要添加图片
-        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"是否上传图片" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil];
-        alert.tag = 3002;
-        [alert show];
+    NSMutableArray * titleArray = [[NSMutableArray alloc] init];
+    
+    if (editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeNone) {
+        
+        [titleArray addObject:@"从相册选择"];
+        [titleArray addObject:@"拍一张照片"];
     }
-    else if (editUserSquareView.currentType == EditUserSquareViewTypeImageLoadSuccessful) {
-        //需要删除图片
-        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"是否删除" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil];
-        alert.tag = 3001;
-        [alert show];
+    else if (editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoadSuccessful) {
+        
+        [titleArray addObject:@"删除该照片"];
     }
-    else if (editUserSquareView.currentType == EditUserSquareViewTypeImageLoadFailure) {
-        //需要重新发送图片
+    else if (editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoadFailure) {
+        
+        [titleArray addObject:@"删除该照片"];
+        [titleArray addObject:@"再试一次"];
     }
-    else if (editUserSquareView.currentType == EditUserSquareViewTypeOnly) {
-        //需要替换图片
-        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"是否替换图片" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil];
-        alert.tag = 3003;
-        [alert show];
+    else if (editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeOnly) {
+        
+        [titleArray addObject:@"从相册选择"];
+        [titleArray addObject:@"拍一张照片"];
     }
+    else if (editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoading || editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageUploading) {
+        
+        [titleArray addObject:@"删除该照片"];
+    }
+    
+    [titleArray addObject:@"取消"];
+    [JMActionSheet showTitle:[titleArray copy] type:JMActionSheetTypeBlack];
+    __weak __typeof(self)weakSelf = self;
+    [JMActionSheet shareJMActionSheet].clickCancle = ^(NSString * title) {
+        if ([title isEqualToString:@"从相册选择"]) {
+            [weakSelf cameraViewController:0 didFinishPickingMediaWithInfo:[UIImage imageNamed:@"che.jpg"]];
+        }
+        else if ([title isEqualToString:@"拍一张照片"]) {
+            [weakSelf cameraViewController:0 didFinishPickingMediaWithInfo:[UIImage imageNamed:@"che.jpg"]];
+        }
+        else if ([title isEqualToString:@"删除该照片"]) {
+            [weakSelf.editUserPhotoView deleteEditUserSquareView:editUserSquareView index:index];
+            weakSelf.selectEditUserSquareView = nil;
+        }
+        else if ([title isEqualToString:@"再试一次"]) {
+            [weakSelf cameraViewController:0 didFinishPickingMediaWithInfo:weakSelf.selectEditUserSquareView.editUserSquareModel.tempImage];
+            weakSelf.selectEditUserSquareView = nil;
+        }
+    };
 
     
 
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    NSString * title = [alertView buttonTitleAtIndex:buttonIndex];
-    if (alertView.tag == 3001 && [title isEqualToString:@"确定"]) {
-        [self.editUserPhotoView deleteEditUserSquareView:_deleteEditUserSquareView index:_deleteIndex];
+- (void)cameraViewController:(NSInteger )type didFinishPickingMediaWithInfo:(UIImage *)image {
+    
+    if (_selectEditUserSquareView) {
+        if (_selectEditUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeOnly) {
+            //替换
+            [self.editUserPhotoView modifyUserSquareView:_selectEditUserSquareView type:EditUserSquareModelTypeImageUploading];
+        }
+        else if (_selectEditUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeNone){
+            //上传图片
+            [self.editUserPhotoView addEditUserSquareView:_selectEditUserSquareView];
+        }
+        _selectEditUserSquareView.editUserSquareModel.tempImage = image;
     }
-    else if (alertView.tag == 3002 && [title isEqualToString:@"确定"]) {
-        NSString * addImageUrl = @"http://7vzoqx.com1.z0.glb.clouddn.com/0044755a3c76171d48d188ebba77a8e3.jpeg";
-        [self.editUserPhotoView addEditUserSquareView:_deleteEditUserSquareView imageNetPatch:addImageUrl];
-    }
-    else if (alertView.tag == 3003 && [title isEqualToString:@"确定"]) {
-        NSString * addImageUrl = @"http://7vzoqx.com1.z0.glb.clouddn.com/00cbe871d250bbede73482d2a9049e6d.jpeg";
-        [self.editUserPhotoView replaceEditUserSquareView:_deleteEditUserSquareView imageNetPatch:addImageUrl];
-    }
+    __weak __typeof(self)weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSString * imageUrl = @"http://7vzoqx.com1.z0.glb.clouddn.com/00019e87ce44f48fd443e6b1b399b49f.jpeg";
+        NSString * imageID = @"1";
+        if (imageUrl && imageID) {
+            //需要添加图片
+            _selectEditUserSquareView.editUserSquareModel.squareViewID = [NSString stringWithFormat:@"%@",imageID];
+            _selectEditUserSquareView.editUserSquareModel.squareImageUrl = imageUrl;
+            [weakSelf.editUserPhotoView modifyUserSquareView:_selectEditUserSquareView type:EditUserSquareModelTypeImageLoading];
+        }
+        else {
+            [weakSelf.editUserPhotoView modifyUserSquareView:_selectEditUserSquareView type:EditUserSquareModelTypeImageLoadFailure];
+        }
+    });
+    
+    
 }
 
 #pragma mark - getter

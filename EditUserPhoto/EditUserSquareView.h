@@ -7,20 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSInteger, EditUserSquareViewType) {
-    EditUserSquareViewTypeNone,                 //没有图片      //不可以移动
-    EditUserSquareViewTypeImageLoading,         //图片加载中     //可以移动
-    EditUserSquareViewTypeImageLoadSuccessful,  //图片加载完成    //可以移动
-    EditUserSquareViewTypeImageLoadFailure,     //图片加载完成    //可以移动
-    EditUserSquareViewTypeOnly,                 //唯一的图片      //不可能移动
-};
-
+#import "EditUserSquareModel.h"
 
 @interface EditUserSquareView : UIView
 
-@property (nonatomic,assign,readonly) EditUserSquareViewType currentType;
+@property (nonatomic,strong) EditUserSquareModel * editUserSquareModel;
 
-- (void)changeType:(EditUserSquareViewType)squareViewType otherData:(id)otherData;
+@property (nonatomic,strong) UIActivityIndicatorView * loadingActivityIndicator;
+
+//通过Type来改变UI
+- (void)changeTypeWithSquareView:(EditUserSquareView *)squareView;
 
 @end

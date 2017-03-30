@@ -8,31 +8,27 @@
 
 #import "EditUserPhotoView.h"
 
+static CGFloat const EachViewInterval = 1;
 
-static CGFloat const EachViewInterval = 2;
-
-static CGFloat const LongPressNarrowWidth = 64;
-
+static CGFloat const LongPressNarrowWidth = 80;
 
 
 @interface EditUserPhotoView ()<UIGestureRecognizerDelegate>
 
 //初始化固定顺序的数组 count == 6
-@property (nonatomic,strong) NSArray * imagesArray;
+@property (nonatomic,copy) NSArray * imagesArray;
 
 //改变顺序的可变数组 count == 6
 @property (nonatomic,strong) NSMutableArray * changeOrderimagesArray;
 
 //里面的数据为NSValue类型 count == 6
-@property (nonatomic,strong) NSArray * imagesFrameArray;
-
-//图片URL的数组 count <= 6 (最大为6)
-@property (nonatomic,strong) NSMutableArray * imagesUrlArray;
-
-@property (nonatomic,strong) NSMutableArray * testLabArray;
+@property (nonatomic,copy) NSArray * imagesFrameArray;
 
 //上一次进入的View
 @property (nonatomic,strong) EditUserSquareView * lastPassIntoView;
+
+//初始化ID数据
+@property (nonatomic,copy) NSArray * fristImagesIDArray;
 
 @end
 
@@ -55,71 +51,158 @@ static CGFloat const LongPressNarrowWidth = 64;
 
 #pragma mark - 对外暴露方法
 
-//刷新数据
-- (void)refreshImageData:(NSArray *)imageUrlArray {
-    self.imagesUrlArray = [imageUrlArray mutableCopy];
+//获取当前排序 可能含有临时数据
+- (NSArray *)arrayWithCurrentSortModelArray {
     
-    NSInteger num = MIN(self.imagesUrlArray.count, _changeOrderimagesArray.count);
-    
-    for (int i = 0; i < num; i++) {
+    NSMutableArray * currentSortIDArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < _changeOrderimagesArray.count; i++) {
         EditUserSquareView * editUserSquareView = _changeOrderimagesArray[i];
-        [editUserSquareView changeType:EditUserSquareViewTypeImageLoading otherData:self.imagesUrlArray[i]];
+        //加载成功
+        if (editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoadSuccessful || editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeOnly ||
+            editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoading ||
+            editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageUploading ||
+            editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoadFailure) {
+            
+            [currentSortIDArray addObject:editUserSquareView.editUserSquareModel];
+        }
+        else {
+            //没有图片
+            //EditUserSquareModelTypeNone
+            
+        }
+    }
+    
+    return [currentSortIDArray copy];
+}
+
+//获取当前排序
+- (NSArray *)arrayWithCurrentSucceedSortModelArray {
+    
+    NSMutableArray * currentSortIDArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < _changeOrderimagesArray.count; i++) {
+        EditUserSquareView * editUserSquareView = _changeOrderimagesArray[i];
+        
+        if (editUserSquareView.editUserSquareModel.squareViewID && editUserSquareView.editUserSquareModel.squareViewID.length > 0) {
+            
+            [currentSortIDArray addObject:editUserSquareView.editUserSquareModel];
+        }
+        else {
+            
+        }
+    }
+    
+    return [currentSortIDArray copy];
+}
+
+//是否修改过
+- (BOOL)hasModifiedWithModelArray {
+    
+    NSArray * currentImagesIDArray = [self arrayWithCurrentSucceedSortModelArray];
+    
+    BOOL isSame = YES;
+    if (currentImagesIDArray.count == _fristImagesIDArray.count) {
+        
+        for (int i = 0; i < _fristImagesIDArray.count; i++) {
+            
+            EditUserSquareModel * fristModel = [_fristImagesIDArray objectAtIndex:i];
+            EditUserSquareModel * currentModel = [currentImagesIDArray objectAtIndex:i];
+            if (![fristModel.squareViewID isEqualToString:currentModel.squareViewID]) {
+                isSame = NO;
+                break;
+            }
+        }
+    }
+    else {
+        isSame = NO;
+    }
+    
+    return isSame;
+}
+
+- (BOOL)hasTempDataWithModelArray {
+    
+    BOOL hasTempData = NO;
+    for (int i = 0; i < _changeOrderimagesArray.count; i++) {
+        EditUserSquareView * editUserSquareView = _changeOrderimagesArray[i];
+        if (editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoading ||
+            editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageUploading ||
+            editUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoadFailure) {
+            
+            hasTempData = YES;
+            return hasTempData;
+        }
+    }
+    return hasTempData;
+}
+
+//刷新数据
+- (void)refreshImageData:(NSArray *)imageUrlArray sortID:(NSArray *)sortID {
+    
+    for (int i = 0; i < _changeOrderimagesArray.count; i++) {
+        
+        //初始化model数据
+        EditUserSquareView * editUserSquareView = _changeOrderimagesArray[i];
+        if (i >= imageUrlArray.count) {
+            editUserSquareView.editUserSquareModel.squareType = EditUserSquareModelTypeNone;
+        }
+        else {
+            editUserSquareView.editUserSquareModel.squareType = EditUserSquareModelTypeImageLoadSuccessful;
+            editUserSquareView.editUserSquareModel.squareViewID = sortID[i];
+            editUserSquareView.editUserSquareModel.squareImageUrl = imageUrlArray[i];
+        }
+        
+        _fristImagesIDArray = [self arrayWithCurrentSucceedSortModelArray];
+        //更新UI
+        [editUserSquareView changeTypeWithSquareView:editUserSquareView];
     }
 }
 
 //删除
 - (void)deleteEditUserSquareView:(EditUserSquareView *)squareView index:(NSInteger)index {
     
-    if (self.imagesUrlArray.count <= 0 || (self.imagesUrlArray.count - 1) >= _changeOrderimagesArray.count) {
+    NSArray * currentSortModelArray = [self arrayWithCurrentSortModelArray];
+    
+    if (currentSortModelArray.count <= 0 || (currentSortModelArray.count - 1) >= _changeOrderimagesArray.count) {
         NSLog(@"error:deleteEditUserSquareView:出错了");
     }
-    //点击的View
+    
+    //更新model和UI
     EditUserSquareView * toSquareView = squareView;
-    EditUserSquareView * fromeSquareView = _changeOrderimagesArray[self.imagesUrlArray.count - 1];
+    [self modifyUserSquareView:toSquareView type:EditUserSquareModelTypeNone];
     
-    //更改点击View的状态
-    [toSquareView changeType:EditUserSquareViewTypeNone otherData:nil];
+    //移动 fromeSquareView 只要更新frame就可以
+    EditUserSquareView * fromeSquareView = _changeOrderimagesArray[currentSortModelArray.count - 1];
+    if (fromeSquareView != toSquareView) {
+        toSquareView.frame = fromeSquareView.frame;
+        [self moveUserSquareViewWithToView:toSquareView fromView:fromeSquareView];
+    }
+
     
-    //移动
-    toSquareView.frame = fromeSquareView.frame;
-    [self moveUserSquareViewWithToView:toSquareView fromView:fromeSquareView];
-    
-    //更新数据
-    [self.imagesUrlArray removeObjectAtIndex:index];
 }
 
 //增加
-- (void)addEditUserSquareView:(EditUserSquareView *)squareView imageNetPatch:(NSString *)imageNetPatch {
+- (void)addEditUserSquareView:(EditUserSquareView *)squareView {
     
-    if (self.imagesUrlArray.count >= _changeOrderimagesArray.count) {
+    NSArray * currentSortModelArray = [self arrayWithCurrentSortModelArray];
+    
+    if (currentSortModelArray.count >= _changeOrderimagesArray.count) {
         NSLog(@"error:addEditUserSquareView:出错了");
         return;
     }
-    //点击的View
-    EditUserSquareView * toSquareView = squareView;
-    EditUserSquareView * fromeSquareView = _changeOrderimagesArray[self.imagesUrlArray.count];
     
-    //更改点击View的状态
-    [toSquareView changeType:EditUserSquareViewTypeImageLoading otherData:imageNetPatch];
-    
+    [self modifyUserSquareView:squareView type:EditUserSquareModelTypeImageUploading];
     //移动
-    toSquareView.frame = fromeSquareView.frame;
-    [self moveUserSquareViewWithToView:toSquareView fromView:fromeSquareView];
-    
-    //更新数据
-    [self.imagesUrlArray addObject:imageNetPatch];
+    EditUserSquareView * fromeSquareView = _changeOrderimagesArray[currentSortModelArray.count];
+    if (fromeSquareView != squareView) {
+        squareView.frame = fromeSquareView.frame;
+        [self moveUserSquareViewWithToView:squareView fromView:fromeSquareView];
+    }
 }
 
-//替换
-- (void)replaceEditUserSquareView:(EditUserSquareView *)squareView imageNetPatch:(NSString *)imageNetPatch {
-    
-    [squareView changeType:EditUserSquareViewTypeNone otherData:imageNetPatch];
-    [squareView changeType:EditUserSquareViewTypeImageLoading otherData:imageNetPatch];
-    
-    //获取第几个View需要替换
-    NSInteger toIndex = [_changeOrderimagesArray indexOfObjectIdenticalTo:squareView];
-    //更新数据
-    [self.imagesUrlArray replaceObjectAtIndex:toIndex withObject:imageNetPatch];
+- (void)modifyUserSquareView:(EditUserSquareView *)squareView type:(EditUserSquareModelType)type {
+    //更新model和UI
+    squareView.editUserSquareModel.squareType = type;
+    [squareView changeTypeWithSquareView:squareView];
     
 }
 
@@ -128,9 +211,10 @@ static CGFloat const LongPressNarrowWidth = 64;
 - (void)tapAction:(UITapGestureRecognizer *)tap {
     
     EditUserSquareView * tapEditUserSquareView = (EditUserSquareView *)tap.view;
-
-    if (_imagesUrlArray.count <= 1 && tapEditUserSquareView.currentType == EditUserSquareViewTypeImageLoadSuccessful) {
-        [tapEditUserSquareView changeType:EditUserSquareViewTypeOnly otherData:nil];
+    NSArray * currentSortIDArray = [self arrayWithCurrentSortModelArray];
+    
+    if (currentSortIDArray.count <= 1 && tapEditUserSquareView.editUserSquareModel.squareType == EditUserSquareModelTypeImageLoadSuccessful) {
+        tapEditUserSquareView.editUserSquareModel.squareType = EditUserSquareModelTypeOnly;
     }
     
     NSInteger toIndex = [_changeOrderimagesArray indexOfObjectIdenticalTo:tap.view];
@@ -144,6 +228,7 @@ static CGFloat const LongPressNarrowWidth = 64;
 
 
 - (void)moveAnimationWithFrame:(CGRect)frame moveView:(UIView *)moveView delay:(NSInteger)delay {
+    
     [UIView animateWithDuration:0.5 delay:delay * 0.05 usingSpringWithDamping:0.7 initialSpringVelocity:0.5 options:UIViewAnimationOptionCurveLinear animations:^{
         moveView.frame = frame;
     } completion:^(BOOL finished) {
@@ -158,16 +243,19 @@ static CGFloat const LongPressNarrowWidth = 64;
     CGPoint point = [gestureRecognizer locationInView:gestureRecognizer.view.superview];
     EditUserSquareView * imageView = (EditUserSquareView *)gestureRecognizer.view;
     //没有照片不可以长按
-    if (imageView.currentType == EditUserSquareViewTypeNone) {
+    if (imageView.editUserSquareModel.squareType == EditUserSquareModelTypeNone) {
         return;
     }
     
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        [UIView animateWithDuration:1 delay:0 usingSpringWithDamping:0.3 initialSpringVelocity:0.4 options:UIViewAnimationOptionCurveLinear animations:^{
-            imageView.frame = CGRectMake(point.x - LongPressNarrowWidth/2, point.y - LongPressNarrowWidth/2, LongPressNarrowWidth, LongPressNarrowWidth);
-        } completion:^(BOOL finished) {
-            
+        
+        CGFloat trans = LongPressNarrowWidth/imageView.frame.size.width;
+        [UIView animateWithDuration:0.2 animations:^{
+            imageView.center = point;
+            imageView.transform = CGAffineTransformMakeScale(trans, trans);
         }];
+        [self bringSubviewToFront:imageView];
+        
     }
     else if (gestureRecognizer.state == UIGestureRecognizerStateChanged) {
         
@@ -176,7 +264,8 @@ static CGFloat const LongPressNarrowWidth = 64;
         EditUserSquareView * passIntoView = [self getPassIntoView:imageView touchPoint:point];
         
         //没有照片不移动
-        if (passIntoView.currentType == EditUserSquareViewTypeNone) {
+        if (passIntoView.editUserSquareModel.squareType == EditUserSquareModelTypeNone) {
+            
             return;
         }
         
@@ -196,7 +285,7 @@ static CGFloat const LongPressNarrowWidth = 64;
         EditUserSquareView * passIntoView = [self getPassIntoView:imageView touchPoint:point];
         
         CGRect passIntoViewFrame = CGRectZero;
-        if (passIntoView.currentType == EditUserSquareViewTypeNone) {
+        if (passIntoView.editUserSquareModel.squareType == EditUserSquareModelTypeNone) {
             //没有照片不移动
             NSValue * toFrameValue = self.imagesFrameArray[toIndex];
             passIntoViewFrame = [toFrameValue CGRectValue];
@@ -204,8 +293,10 @@ static CGFloat const LongPressNarrowWidth = 64;
         else {
             passIntoViewFrame = [self rectPassIntoViewFrameWithtouchPoint:point touchNum:toIndex];
         }
+
+        imageView.transform = CGAffineTransformIdentity;
         
-        [UIView animateWithDuration:0.25 delay:0 usingSpringWithDamping:0.7 initialSpringVelocity:0.4 options:UIViewAnimationOptionCurveLinear animations:^{
+        [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.82 initialSpringVelocity:25 options:UIViewAnimationOptionCurveLinear animations:^{
             imageView.frame = passIntoViewFrame;
         } completion:^(BOOL finished) {
             
@@ -322,7 +413,6 @@ static CGFloat const LongPressNarrowWidth = 64;
     for (int i = 0; i < 6; i++) {
         
         EditUserSquareView * editUserSquareView = [[EditUserSquareView alloc] init];
-        editUserSquareView.backgroundColor = [UIColor lightGrayColor];
         editUserSquareView.tag = i;
         editUserSquareView.userInteractionEnabled = YES;
         UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction:)];
@@ -331,23 +421,13 @@ static CGFloat const LongPressNarrowWidth = 64;
         UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                       action:@selector(handleTableviewCellLongPressed:)];
-        //代理
+        
         longPress.delegate = self;
         longPress.minimumPressDuration = 0.1;
         [editUserSquareView addGestureRecognizer:longPress];
         
         [imagesMutableArray addObject:editUserSquareView];
         [self addSubview:editUserSquareView];
-        
-        UILabel * lab = [[UILabel alloc] init];
-        lab.text = [NSString stringWithFormat:@"%ld",(long)editUserSquareView.tag];
-        lab.textColor = [UIColor blackColor];
-        lab.textAlignment = NSTextAlignmentCenter;
-        [editUserSquareView addSubview:lab];
-        
-        //测试
-        [self.testLabArray addObject:lab];
-        
     }
     
     self.imagesArray = [imagesMutableArray copy];
@@ -385,8 +465,6 @@ static CGFloat const LongPressNarrowWidth = 64;
         NSValue * frameValue = [NSValue valueWithCGRect:imageView.frame];
         [imagesFrameMutableArray addObject:frameValue];
         
-        UILabel * lab = self.testLabArray[i];
-        lab.frame = CGRectMake(0, 0, minWidth, minWidth);
     }
     self.imagesFrameArray = [imagesFrameMutableArray copy];
 }
@@ -395,28 +473,6 @@ static CGFloat const LongPressNarrowWidth = 64;
 #pragma mark - getter
 
 
-- (NSMutableArray *)testLabArray {
-    if (_testLabArray == nil) {
-        _testLabArray = [[NSMutableArray alloc] init];
-    }
-    return _testLabArray;
-}
-
-
-
-- (NSArray *)currentImageArray {
-    _currentImageArray = [_changeOrderimagesArray copy];
-    return _currentImageArray;
-}
-
-
-
-- (NSMutableArray *)imagesUrlArray {
-    if (_imagesUrlArray == nil) {
-        _imagesUrlArray = [[NSMutableArray alloc] init];
-    }
-    return _imagesUrlArray;
-}
 
 
 
