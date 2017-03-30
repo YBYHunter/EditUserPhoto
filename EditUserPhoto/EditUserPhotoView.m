@@ -280,9 +280,11 @@ static CGFloat const LongPressNarrowWidth = 80;
     }
     else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
         
+        CGPoint endPoint = imageView.center;
+        
         NSInteger toIndex = [_changeOrderimagesArray indexOfObjectIdenticalTo:imageView];
         //进入到哪个View
-        EditUserSquareView * passIntoView = [self getPassIntoView:imageView touchPoint:point];
+        EditUserSquareView * passIntoView = [self getPassIntoView:imageView touchPoint:endPoint];
         
         CGRect passIntoViewFrame = CGRectZero;
         if (passIntoView.editUserSquareModel.squareType == EditUserSquareModelTypeNone) {
@@ -291,7 +293,7 @@ static CGFloat const LongPressNarrowWidth = 80;
             passIntoViewFrame = [toFrameValue CGRectValue];
         }
         else {
-            passIntoViewFrame = [self rectPassIntoViewFrameWithtouchPoint:point touchNum:toIndex];
+            passIntoViewFrame = [self rectPassIntoViewFrameWithtouchPoint:endPoint touchNum:toIndex];
         }
 
         imageView.transform = CGAffineTransformIdentity;
