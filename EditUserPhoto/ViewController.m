@@ -32,9 +32,9 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     [self.view addSubview:self.editUserPhotoView];
-    [self.view addSubview:self.remakesButton];
-    [self.view addSubview:self.exportDataButton];
-    [self.view addSubview:self.uploadDataButton];
+//    [self.view addSubview:self.remakesButton];
+//    [self.view addSubview:self.exportDataButton];
+//    [self.view addSubview:self.uploadDataButton];
 }
 
 - (void)remakesButAction {
